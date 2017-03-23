@@ -63,7 +63,8 @@ $form = ActiveForm::begin([
 
 
 <?php echo Tabs::widget([
-     'items' => [
+        'encodeLabels' => false,
+        'items' => [
          [
              'label' => 'Previous',
              'url' => Yii::$app->getUrlManager()->createUrl(['main/index','date'=>date('Y-m-02',strtotime('last month', strtotime($current_date)))]),
@@ -77,7 +78,7 @@ $form = ActiveForm::begin([
              )),
          ],
          [
-             'label' => 'Outgo Plan (' . $sum_planoutgo . ')',
+             'label' => 'Outgo Plan (' . ( $sum_planincome < $sum_planoutgo ? '<span class="red">' . $sum_planoutgo . '</span>' :  ( $sum_planincome +100 < $sum_planoutgo ? '<span class="orange">' . $sum_planoutgo . '</span>' : $sum_planoutgo ) ) . ')',
              'content' => $this->render('_planoutgo', array(
                  'dataProvider' => $dataProviderPlanOutgo,
                  'sum_planoutgo' => $sum_planoutgo,

@@ -155,6 +155,43 @@ class OutgoController extends Controller
     }
 
     /**
+     * Copy a new Outgo model.
+     * @return mixed
+     */
+    public function actionCopy()
+    {
+        $model = new Outgo();
+
+        $categories = Utils::getOutgoCategories();
+        $categories2 = self::getOutgoCategories2();
+        $names = self::getNames();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->goBack();
+        } else {
+            if (isset(Yii::$app->request->queryParams['id']) && Yii::$app->request->queryParams['id']) {
+                $one = Outgo::findOne(Yii::$app->request->queryParams['id']);
+                $model->category = ( $one->category );
+                $model->category2 = ( $one->category2 );
+                $model->name = ( $one->name );
+                $model->date = ( $one->date );
+                $model->sum = ( $one->sum );
+            }
+            else {
+                $model->category = (isset(Yii::$app->request->queryParams['category']) ? Yii::$app->request->queryParams['category'] : '');
+                $model->category2 = (isset(Yii::$app->request->queryParams['category2']) ? Yii::$app->request->queryParams['category2'] : '');
+                $model->date = date('Y-m-d');
+            }
+            return $this->render('create', [
+                'model' => $model,
+                'categories' => $categories,
+                'categories2' => $categories2,
+                'names' => $names,
+            ]);
+        }
+    }
+
+    /**
      * check saved outgo from request params: category, sum, date, id
      * @return array|string - json array of error or success
      */
@@ -183,7 +220,7 @@ class OutgoController extends Controller
             if ($plan_sum_category < $sum_category_without_id + $sum) {
                 return Json::encode([
                     'result' => 'error',
-                    'message' => 'Expenditures by category ' . $category . ' exceeded planned by ' . ($plan_sum_category - $sum_category_without_id + $sum) . '!'
+                    'message' => 'Expenditures by category ' . $category . ' exceeded planned by ' . ( $sum_category_without_id + $sum - $plan_sum_category ) . '!'
                 ]);
             }
 
@@ -197,7 +234,7 @@ class OutgoController extends Controller
             if ($sum_income < $sum_without_id + $sum) {
                 return Json::encode([
                     'result' => 'error',
-                    'message' => 'Expenses for the month more income by ' . ($sum_income - $sum_without_id + $sum) . '!'
+                    'message' => 'Expenses for the month more income by ' . ( $sum_without_id + $sum - $sum_income ) . '!'
                 ]);
             }
             //check if day of not current month
@@ -242,8 +279,17 @@ class OutgoController extends Controller
                     ]);
 
                 } else {
-                    //If more than one record - show the table of these Incomes
-                    return $this->redirect(Yii::$app->getUrlManager()->createUrl(['outgo/indexcategory', 'id' => $id]));
+
+                    $searchModel = new OutgoSearch();
+                    $dataProvider = $searchModel->searchCategory(Yii::$app->request->queryParams);
+                    if ( count( $dataProvider->getModels() ) == 1 && $dataProvider->getModels()[0]->category2 == '' ) {
+                        //If one empty category2 of these Incomes
+                        return $this->redirect(Yii::$app->getUrlManager()->createUrl(['outgo/indexcategory2', 'id' => $id]));
+                    }
+                    else {
+                        //If more than one record - show the table of these Incomes
+                        return $this->redirect(Yii::$app->getUrlManager()->createUrl(['outgo/indexcategory', 'id' => $id]));
+                    }
                 }
             }
     }

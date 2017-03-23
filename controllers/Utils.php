@@ -6,6 +6,7 @@ use app\models\Income;
 use app\models\PlanIncome;
 use app\models\Outgo;
 use app\models\PlanOutgo;
+use yii\db\Query;
 
 /**
  * This is the class for utils.
@@ -56,21 +57,22 @@ class Utils
      */
     public static function getIncomeCategories() {
 
-        $category_income = Income::find()
-            ->select(['category as label'])
+        $income = (new Query())
+            ->select('category as label')
+            ->from(Income::tableName());
+
+        $plan_income = (new Query())
+            ->select('category as label')
+            ->from(PlanIncome::tableName());
+
+        $category = (new Query())
+            ->select('*')
             ->distinct()
-            ->asArray()
+            ->from([$income->union($plan_income)])
+            ->orderBy('label')
             ->all();
 
-        $category_plan_income = PlanIncome::find()
-            ->select(['category as label'])
-            ->distinct()
-            ->asArray()
-            ->all();
-
-        $category = array_unique( array_merge($category_income, $category_plan_income), SORT_REGULAR );
         return $category;
-
 
     }
 
@@ -80,19 +82,21 @@ class Utils
      */
     public static function getOutgoCategories() {
 
-        $category_outgo = Outgo::find()
-            ->select(['category as label'])
+        $outgo = (new Query())
+            ->select('category as label')
+            ->from(Outgo::tableName());
+
+        $plan_outgo = (new Query())
+            ->select('category as label')
+            ->from(PlanOutgo::tableName());
+
+        $category = (new Query())
+            ->select('*')
             ->distinct()
-            ->asArray()
+            ->from([$outgo->union($plan_outgo)])
+            ->orderBy('label')
             ->all();
 
-        $category_plan_outgo = PlanOutgo::find()
-            ->select(['category as label'])
-            ->distinct()
-            ->asArray()
-            ->all();
-
-        $category = array_unique( array_merge( $category_outgo, $category_plan_outgo ), SORT_REGULAR );
         return $category;
 
 

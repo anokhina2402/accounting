@@ -47,6 +47,9 @@ class PlanOutgoSearch extends PlanOutgo
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => false,
+            ],
         ]);
 
         $this->load($params);
@@ -86,6 +89,10 @@ class PlanOutgoSearch extends PlanOutgo
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+
         ]);
 
         $this->load($params);

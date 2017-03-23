@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use yii\db\Query;
 use yii\db\ActiveRecord;
 use yii\behaviors\BlameableBehavior;
@@ -95,6 +96,26 @@ class PlanIncome extends ActiveRecord
             ->count();
 
         return ( $count > 1 ? false : true );
+    }
+
+    /**
+     * Get sum PlanIncome in the month
+     * @param int $date - date in the month
+     * @return mixed - sum
+     */
+    public static function getSumPlanIncome($date = 0)
+    {
+
+        $query = self::find()->select('SUM(sum) as sum');
+
+        $query->andFilterWhere([
+            'user_id' => Yii::$app->user->id,
+        ]);
+
+        $query->andFilterWhere(['>=', 'date', Utils::getStartMonth($date)]);
+        $query->andFilterWhere(['<=', 'date', Utils::getFinishMonth($date)]);
+
+        return $query->scalar();
     }
 
 

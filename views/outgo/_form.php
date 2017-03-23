@@ -27,7 +27,8 @@ use yii\bootstrap\Modal;
             'source' => $categories,
         ],
         'options'=>[
-            'class'=>'form-control'
+            'class'=>'form-control',
+            'autoFocus' => true,
         ]
     ]);
     ?>
@@ -51,9 +52,13 @@ use yii\bootstrap\Modal;
         ]
     ]);
     ?>
+
     <?= $form->field($model, 'sum')->textInput(); ?>
     <?= $form->field($model, 'date')->widget(\yii\jui\DatePicker::classname(), [
         'dateFormat' => 'yyyy-MM-dd',
+        'clientOptions' => [
+                'firstDay' => '1',
+        ]
     ]) ?>
 
     <div class="form-group">

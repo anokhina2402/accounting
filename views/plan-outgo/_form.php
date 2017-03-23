@@ -25,14 +25,17 @@ use yii\bootstrap\Modal;
             'source' => $categories,
         ],
         'options'=>[
-            'class'=>'form-control'
+            'class'=>'form-control',
+            'autoFocus' => true,
         ]
     ]);
     ?>
     <?= $form->field($model, 'sum')->textInput(); ?>
     <?= $form->field($model, 'date')->widget(\yii\jui\DatePicker::classname(), [
-        //'language' => 'ru',
         'dateFormat' => 'yyyy-MM-dd',
+        'clientOptions' => [
+            'firstDay' => '1',
+        ]
     ]) ?>
 
     <div class="form-group">
@@ -57,19 +60,36 @@ use yii\bootstrap\Modal;
 
 </div>
 <?php
+$id = ($model->isNewRecord ? 0 : $model->id );
+
 $script = <<< JS
 
 $('#save-plan-outgo').click(function() {
-    var date = new Date();
-    var firstDay = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-    var date_val = new Date($('#planoutgo-date').val());
-    if (date_val < firstDay) {
-        $("#plan-outgo-modal-confirm").modal({show:true}).find('.modal-body').html('Selected day of started month!');
-    }
-    else {
-        $('#plan-outgo-form').submit();
-    }
-});
+    $.ajax({
+                type: "GET",
+                url: '/plan-outgo/validate',
+                dataType: 'json',
+                data: {
+                    'sum': $('#planoutgo-sum').val(),
+                    'date': $('#planoutgo-date').val(),
+                    'id': $id
+                    },
+                success: function (data) {
+                    if (data.result == 'error'){
+                        
+                        $("#plan-outgo-modal-confirm").modal({show:true}).find('.modal-body').html(data.message);
+                    }
+                    else {
+                        $('#plan-outgo-form').submit();
+                    }
+
+                },
+                error: function (exception) {
+                    alert('error'+exception);
+                }
+            });
+    });
+
 JS;
 $this->registerJS($script);
 

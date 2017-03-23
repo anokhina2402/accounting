@@ -84,18 +84,18 @@ AppAsset::register($this);
         });
         var activeTab = localStorage.getItem('activeTab');
         if(activeTab){
-            $('#w5 a[href="' + activeTab + '"]').tab('show');
+            $('.nav-tabs a[href="' + activeTab + '"]').tab('show');
         }
         $('.planoutgo-category').each(function(){
             // If more than planned
-            if ($(this).parent().find('td.planoutgo-sum').html()*1 <= $('.outgo-category:contains("'+$(this).html()+'")').parent().find('.outgo-sum').html()*1) {
+            if ($(this).parent().find('td.planoutgo-sum').html()*1 < $('.outgo-category:contains("'+$(this).html()+'")').parent().find('.outgo-sum').html()*1) {
                 $(this).parent().addClass('red');
                 $('.outgo-category:contains("'+$(this).html()+'")').parent().addClass('red');
             }
             // If there is 10%
-            else if (($(this).parent().find('td.planoutgo-sum').html()*1 + $(this).parent().find('td.planoutgo-sum').html()*0.1) <= $('.outgo-category:contains("'+$(this).html()+'")').parent().find('.outgo-sum').html()*1) {
-                $(this).parent().addClass('orange');
-                $('.outgo-category:contains("'+$(this).html()+'")').parent().addClass('orange');
+            else if (($(this).parent().find('td.planoutgo-sum').html()*1 + $(this).parent().find('td.planoutgo-sum').html()*0.1) >= $('.outgo-category:contains("'+$(this).html()+'")').parent().find('.outgo-sum').html()*1) {
+                $(this).parent().addClass('purple');
+                $('.outgo-category:contains("'+$(this).html()+'")').parent().addClass('purple');
             }
         });
 

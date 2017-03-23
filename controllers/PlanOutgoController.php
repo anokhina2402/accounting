@@ -2,9 +2,11 @@
 
 namespace app\controllers;
 
+use app\models\PlanIncome;
 use Yii;
 use app\models\PlanOutgo;
 use app\models\PlanOutgoSearch;
+use yii\helpers\Json;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -183,6 +185,50 @@ class PlanOutgoController extends Controller
 
         return $this->goBack();
     }
+
+    /**
+     * check saved PlanOutgo from request params: sum, date, id
+     * @return array|string - json array of error or success
+     */
+    public function actionValidate(){
+
+        if (Yii::$app->request->isAjax) {
+
+            //$category, $sum, $date, $id;
+            $sum = Yii::$app->getRequest()->getQueryParam('sum');
+            $date = Yii::$app->getRequest()->getQueryParam('date');
+            $id = Yii::$app->getRequest()->getQueryParam('id');
+
+
+            // check if plan outgo more than plan income
+            $sum_income = PlanIncome::getSumPlanIncome($date);
+            $sum_without_id = PlanOutgo::getSumWithoutId([
+                'date' => $date,
+                'id' => $id,
+                'user_id' => Yii::$app->user->id
+            ]);
+            if ($sum_income < $sum_without_id + $sum) {
+                return Json::encode([
+                    'result' => 'error',
+                    'message' => 'Expenses for the month more plan income by ' . ( $sum_without_id + $sum - $sum_income ) . '!'
+                ]);
+            }
+            //check if day of started month
+            if ($date < Utils::getStartMonth()) {
+                return Json::encode([
+                    'result' => 'error',
+                    'message' => 'Selected day of started month!'
+                ]);
+            }
+
+            return Json::encode([
+                'result' => 'success',
+                'message' => '',
+            ]);
+        }
+    }
+
+
 
     /**
      * Finds the PlanOutgo model based on its primary key value.

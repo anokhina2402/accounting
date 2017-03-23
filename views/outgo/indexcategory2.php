@@ -54,9 +54,15 @@ $this->title = 'Outgos Category ' . $category. ' ' . $category2;
                             return Html::a( '<span class="glyphicon glyphicon-trash"></span>',
                                 Yii::$app->getUrlManager()->createUrl(['outgo/delete','id'=>$model['id']]),
                                 ['title' => Yii::t('yii', 'Delete all outgoes in category 2'), 'data-pjax' => '0']);
+                        },
+                        'copy'=>function ($url, $model) {
+                            return Html::a( '<span class="glyphicon glyphicon-copy"></span>',
+                                Yii::$app->getUrlManager()->createUrl(['outgo/copy','id'=>$model['id']]),
+                                ['title' => Yii::t('yii', 'Copy outgo'), 'data-pjax' => '0']);
                         }
+
                     ],
-                    'template'=>'{update}   {delete}',
+                    'template'=>'{update}   {delete}   {copy}',
             ],
         ],
         'showFooter'=>true,

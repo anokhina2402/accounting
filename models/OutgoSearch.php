@@ -48,6 +48,9 @@ class OutgoSearch extends Outgo
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => false,
+            ],
         ]);
 
         $this->load($params);
@@ -88,6 +91,9 @@ class OutgoSearch extends Outgo
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => false,
+            ],
         ]);
 
         $this->load($params);
@@ -131,6 +137,9 @@ class OutgoSearch extends Outgo
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => false,
+            ],
         ]);
 
         $this->load($params);
@@ -152,6 +161,7 @@ class OutgoSearch extends Outgo
         $query->andFilterWhere(['<=', 'date', Utils::getFinishMonth($one->date)]);
         $query->andFilterWhere(['category' => $one->category]);
         $query->andFilterWhere(['category2' => $one->category2]);
+        $query->orderBy('date DESC, name ASC');
 
 
 

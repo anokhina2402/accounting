@@ -127,6 +127,39 @@ class PlanOutgo extends ActiveRecord
         return $query->scalar();
     }
 
+    /**
+     * Get sum by parameters without one ID
+     *
+     * @param array $params(user_id, date, category, id)
+     *
+     * @return float
+     */
+    public static function getSumWithoutId($params)
+    {
+        $query = self::find()->select('SUM(sum) as sum');
+
+        //we always filter by user_id and month
+        if ( isset($params['user_id']) && $params['user_id']) {
+            $query->andFilterWhere([
+                'user_id' => $params['user_id'],
+            ]);
+        }
+
+        if ( isset($params['date']) && $params['date']) {
+            $query->andFilterWhere(['>=', 'date', Utils::getStartMonth($params['date'])]);
+            $query->andFilterWhere(['<=', 'date', Utils::getFinishMonth($params['date'])]);
+        }
+        if ( isset($params['category']) && $params['category']) {
+            $query->andFilterWhere(['category' => $params['category']]);
+        }
+
+        if ( isset($params['id']) && $params['id']) {
+            $query->andFilterWhere(['<>', 'id', $params['id']]);
+        }
+
+        return $query->scalar();
+    }
+
 
 
 

@@ -4,6 +4,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use \yii\bootstrap\Modal;
 
 ?>
     <p>
@@ -35,10 +36,53 @@ use yii\grid\GridView;
                     return Html::a( '<span class="glyphicon glyphicon-trash"></span>',
                         Yii::$app->getUrlManager()->createUrl(['outgo/deletecategory','id'=>$model['id']]),
                         ['title' => Yii::t('yii', 'Delete all outgoes in category'), 'data-pjax' => '0']);
+                },
+                'copy'=>function ($url, $model) {
+                    return Html::a( '<span class="glyphicon glyphicon-copy"></span>',
+                        Yii::$app->getUrlManager()->createUrl(['outgo/copy','id'=>$model['id']]),
+                        ['title' => Yii::t('yii', 'Copy outgo'), 'data-pjax' => '0']);
+                },
+                'stat'=>function ($url, $model) {
+                    return Html::a( '<span class="glyphicon glyphicon-eye-open"></span>',
+                        '',
+                        [
+                            'title' => Yii::t('yii', 'Show category static'),
+                            'data-pjax' => '0',
+                            'data-toggle' => 'modal',
+                            'data-target' => '#category-static',
+                            'data-whatever' => $model['category']
+                        ]);
                 }
+
             ],
-            'template'=>'{update}   {delete}',
+            'template'=>'{update}   {delete}   {copy}   {stat}',
         ],
         ],
     'showFooter'=>true,
     ]); ?>
+<?php
+Modal::begin([
+'header' => '<h2>Category static</h2>',
+    'id' => 'category-static'
+]);
+?>
+<?=
+$this->render('/modal/modal-category', array(
+));
+?>
+<?php
+Modal::end();
+?>
+
+<?php
+$script = <<< JS
+
+$('#category-static').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget);
+  var recipient = button.data('whatever');
+  var modal = $(this);
+  modal.find('.modal-header').text(recipient + ' category static');
+})
+JS;
+$this->registerJS($script);
+

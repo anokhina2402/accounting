@@ -32,10 +32,10 @@ $this->title = 'Outgos Category ' . $category;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'name',
             [   'attribute' => 'category2',
                 'footer' => '<strong>In Total</strong>',
             ],
+            'name',
             [   'attribute' => 'sum',
                 'footer' => '<strong>' . $sum . '</strong>',
             ],
@@ -53,9 +53,15 @@ $this->title = 'Outgos Category ' . $category;
                             return Html::a( '<span class="glyphicon glyphicon-trash"></span>',
                                 Yii::$app->getUrlManager()->createUrl(['outgo/deletecategory2','id'=>$model['id']]),
                                 ['title' => Yii::t('yii', 'Delete all outgoes in category 2'), 'data-pjax' => '0']);
+                        },
+                        'copy'=>function ($url, $model) {
+                            return Html::a( '<span class="glyphicon glyphicon-copy"></span>',
+                                Yii::$app->getUrlManager()->createUrl(['outgo/copy','id'=>$model['id']]),
+                                ['title' => Yii::t('yii', 'Copy outgo'), 'data-pjax' => '0']);
                         }
+
                     ],
-                    'template'=>'{update}   {delete}',
+                    'template'=>'{update}   {delete}   {copy}',
             ],
         ],
         'showFooter'=>true,
