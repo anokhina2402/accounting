@@ -53,16 +53,30 @@ $this->title = 'Outgos Category ' . $category. ' ' . $category2;
                         'delete'=>function ($url, $model) {
                             return Html::a( '<span class="glyphicon glyphicon-trash"></span>',
                                 Yii::$app->getUrlManager()->createUrl(['outgo/delete','id'=>$model['id']]),
-                                ['title' => Yii::t('yii', 'Delete all outgoes in category 2'), 'data-pjax' => '0']);
+                                ['title' => Yii::t('yii', 'Delete all outgoes in category 2'), 'data-pjax' => '0', 'data-method'=>'post']);
                         },
                         'copy'=>function ($url, $model) {
                             return Html::a( '<span class="glyphicon glyphicon-copy"></span>',
                                 Yii::$app->getUrlManager()->createUrl(['outgo/copy','id'=>$model['id']]),
                                 ['title' => Yii::t('yii', 'Copy outgo'), 'data-pjax' => '0']);
+                        },
+                        'stat'=>function ($url, $model) {
+                            return Html::a( '<span class="glyphicon glyphicon-eye-open"></span>',
+                                '',
+                                [
+                                    'title' => Yii::t('yii', 'Show name statistic'),
+                                    'data-pjax' => '0',
+                                    'data-toggle' => 'modal',
+                                    'data-target' => '#statistic',
+                                    'data-whatever' => $model['name'],
+                                    'data-type' => 'name',
+
+                                ]);
                         }
 
+
                     ],
-                    'template'=>'{update}   {delete}   {copy}',
+                    'template'=>'{update}   {delete}   {copy}   {stat}',
             ],
         ],
         'showFooter'=>true,

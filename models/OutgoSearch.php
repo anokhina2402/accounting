@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\controllers\Utils;
@@ -167,4 +168,69 @@ class OutgoSearch extends Outgo
 
         return $dataProvider;
     }
+
+    /**
+     * Creates data provider instance with statistic query applied by category
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function searchStatistic($params)
+    {
+        $fields = 'id, name, date, sum, category, category2';
+        if ($params['type'] =='category') {
+            $fields = 'id, name, MAX(date) as date, SUM(sum) as sum, category, category2';
+        }
+        $query = Outgo::find()->select($fields);
+
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+
+
+        //we always filter by user_id
+        $query->andFilterWhere([
+            'user_id' => Yii::$app->user->id,
+        ]);
+        $query->andFilterWhere(['>=', 'date', $params['date_start']]);
+        $query->andFilterWhere(['<=', 'date', $params['date_end']]);
+        $query->orderBy('date DESC');
+        $query->groupBy('');
+
+        if ($params['type'] == 'category') {
+            $query->andFilterWhere(['category' => $params['category']]);
+            $query->groupBy('category2');
+            $query->orderBy('category2');
+        }
+        else if ($params['type'] == 'category2') {
+            $query->andFilterWhere(['category2' => $params['category']]);
+        }
+        else if ($params['type'] == 'name') {
+            $query->andFilterWhere(['name' => $params['category']]);
+        }
+
+        if (count($dataProvider->getModels()) == 1 && $dataProvider->getModels()[0]->category2 == '' && $params['type'] == 'category') {
+            $query->select('id, name, date, sum, category, category2');
+            $query->groupBy('');
+            $query->orderBy('date DESC');
+            $dataProvider = new ActiveDataProvider([
+                'query' => $query,
+                'pagination' => [
+                    'pageSize' => 20,
+                ],
+            ]);
+
+
+        }
+
+        return $dataProvider;
+    }
+
 }

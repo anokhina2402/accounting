@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\OutgoSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -58,10 +57,23 @@ $this->title = 'Outgos Category ' . $category;
                             return Html::a( '<span class="glyphicon glyphicon-copy"></span>',
                                 Yii::$app->getUrlManager()->createUrl(['outgo/copy','id'=>$model['id']]),
                                 ['title' => Yii::t('yii', 'Copy outgo'), 'data-pjax' => '0']);
+                        },
+                        'stat'=>function ($url, $model) {
+                            return Html::a( '<span class="glyphicon glyphicon-eye-open"></span>',
+                                '',
+                                [
+                                    'title' => Yii::t('yii', 'Show category 2 statistic'),
+                                    'data-pjax' => '0',
+                                    'data-toggle' => 'modal',
+                                    'data-target' => '#statistic',
+                                    'data-whatever' => $model['category2'],
+                                    'data-type' => 'category2',
+                                ]);
                         }
 
+
                     ],
-                    'template'=>'{update}   {delete}   {copy}',
+                    'template'=>'{update}   {delete}   {copy}   {stat}',
             ],
         ],
         'showFooter'=>true,

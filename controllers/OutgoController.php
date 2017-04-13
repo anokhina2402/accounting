@@ -432,4 +432,31 @@ class OutgoController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+    /**
+     * Show all statistic
+     * @param $category - category
+     * @param $date_start - date start period
+     * @param $date_end - date end period
+     * @return string
+     */
+    public function actionStatistic() {
+        if  (Yii::$app->request->isAjax) {
+            //$category, $date_start, $date_end
+            $searchModel = new OutgoSearch();
+            $dataProvider = $searchModel->searchStatistic(Yii::$app->request->queryParams);
+
+            return $this->renderAjax('/modal/modal-category', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'date_start' => Yii::$app->request->queryParams['date_start'],
+                'date_end' => Yii::$app->request->queryParams['date_end'],
+                'category' => Yii::$app->request->queryParams['category'],
+                'type' => Yii::$app->request->queryParams['type'],
+                'sum' => Outgo::getSumStatistic(Yii::$app->request->queryParams),
+            ]);
+        }
+    }
+
+
 }

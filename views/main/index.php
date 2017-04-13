@@ -112,9 +112,8 @@ $form = ActiveForm::begin([
 
 </p>
 
+
 <?php
-
-
 $script = <<< JS
 
 $('#export-month-plan').click(function() {
@@ -138,6 +137,7 @@ $('#export-month-plan').click(function() {
                 }
             });
     });
+
 
 JS;
 $this->registerJS($script);

@@ -182,6 +182,33 @@ class Outgo extends ActiveRecord
         return $query->scalar();
     }
 
+    /**
+     * Get sum by parameters without one ID
+     *
+     * @param array $params(user_id, date, category, id)
+     *
+     * @return float
+     */
+    public static function getSumStatistic($params)
+    {
+        $query = self::find()->select('SUM(sum) as sum');
 
+        //we always filter by user_id and month
+        $query->andFilterWhere([
+            'user_id' => Yii::$app->user->id,
+        ]);
+        $query->andFilterWhere(['>=', 'date', $params['date_start']]);
+        $query->andFilterWhere(['<=', 'date', $params['date_end']]);
+        if ($params['type'] == 'category') {
+            $query->andFilterWhere(['category' => $params['category']]);
+            $query->groupBy('category2');
+        }
+        else if ($params['type'] == 'category2')
+            $query->andFilterWhere(['category2' => $params['category']]);
+        else if ($params['type'] == 'name')
+            $query->andFilterWhere(['name' => $params['category']]);
+
+        return $query->scalar();
+    }
 
 }

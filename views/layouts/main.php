@@ -9,6 +9,8 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use app\widgets\Alert;
+use \yii\bootstrap\Modal;
+
 
 AppAsset::register($this);
 ?>
@@ -75,6 +77,16 @@ AppAsset::register($this);
     </div>
 </footer>
 
+<?php
+
+Modal::begin([
+    'header' => '<h2>Statistic</h2>',
+    'id' => 'statistic',
+    'size' => "modal-lg",
+]);
+Modal::end();
+?>
+
 <?php $this->endBody() ?>
 
 <script type="text/javascript">
@@ -92,10 +104,15 @@ AppAsset::register($this);
                 $(this).parent().addClass('red');
                 $('.outgo-category:contains("'+$(this).html()+'")').parent().addClass('red');
             }
-            // If there is 10%
-            else if (($(this).parent().find('td.planoutgo-sum').html()*1 + $(this).parent().find('td.planoutgo-sum').html()*0.1) >= $('.outgo-category:contains("'+$(this).html()+'")').parent().find('.outgo-sum').html()*1) {
+            // If as planned
+            else if ($(this).parent().find('td.planoutgo-sum').html()*1 == $('.outgo-category:contains("'+$(this).html()+'")').parent().find('.outgo-sum').html()*1) {
                 $(this).parent().addClass('purple');
                 $('.outgo-category:contains("'+$(this).html()+'")').parent().addClass('purple');
+            }
+            // If there is 10%
+            else if ($(this).parent().find('td.planoutgo-sum').html()*1 <= $('.outgo-category:contains("'+$(this).html()+'")').parent().find('.outgo-sum').html()*1 + $('.outgo-category:contains("'+$(this).html()+'")').parent().find('.outgo-sum').html()*0.1) {
+                $(this).parent().addClass('blue');
+                $('.outgo-category:contains("'+$(this).html()+'")').parent().addClass('blue');
             }
         });
 
@@ -103,6 +120,46 @@ AppAsset::register($this);
 
 
     });
+
+    $('#statistic').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var recipient = button.data('whatever');
+        var type = button.data('type');
+        var modal = $(this);
+        var date = new Date();
+        var string_date = date.toISOString().substring(0, 10);
+
+        modal.find('.modal-header').text(recipient + ' statistic');
+
+        getStatistic(type, recipient, string_date, string_date);
+
+
+    });
+
+
+    function getStatistic(type, category, date_start, date_end)
+    {
+        jQuery.ajax({
+            type: "GET",
+            url: '/outgo/statistic',
+            dataType: 'html',
+            data: {
+                'category': category,
+                'date_start': date_start,
+                'date_end': date_end,
+                'type': type
+            },
+            success: function (data) {
+                jQuery('#statistic').find('.modal-body').html(data);
+
+            },
+            error: function (exception) {
+                alert('error'+JSON.stringify(exception));
+            }
+        });
+    }
+
+
 </script>
 </body>
 </html>

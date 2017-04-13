@@ -4,11 +4,21 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-use \yii\bootstrap\Modal;
 
 ?>
     <p>
     <?= Html::a('Create Outgo', ['outgo/create'], ['class' => 'btn btn-success']) ?>
+    <?= Html::a( 'Statistic',
+        '',
+        [
+            'title' => Yii::t('yii', 'Show outgo statistic'),
+            'class' => 'btn btn-info',
+            'data-pjax' => '0',
+            'data-toggle' => 'modal',
+            'data-target' => '#statistic',
+            'data-type' => '',
+            'data-whatever' => '',
+        ]); ?>
 </p>
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
@@ -46,11 +56,12 @@ use \yii\bootstrap\Modal;
                     return Html::a( '<span class="glyphicon glyphicon-eye-open"></span>',
                         '',
                         [
-                            'title' => Yii::t('yii', 'Show category static'),
+                            'title' => Yii::t('yii', 'Show category statistic'),
                             'data-pjax' => '0',
                             'data-toggle' => 'modal',
-                            'data-target' => '#category-static',
-                            'data-whatever' => $model['category']
+                            'data-target' => '#statistic',
+                            'data-whatever' => $model['category'],
+                            'data-type' => 'category',
                         ]);
                 }
 
@@ -60,29 +71,4 @@ use \yii\bootstrap\Modal;
         ],
     'showFooter'=>true,
     ]); ?>
-<?php
-Modal::begin([
-'header' => '<h2>Category static</h2>',
-    'id' => 'category-static'
-]);
-?>
-<?=
-$this->render('/modal/modal-category', array(
-));
-?>
-<?php
-Modal::end();
-?>
-
-<?php
-$script = <<< JS
-
-$('#category-static').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget);
-  var recipient = button.data('whatever');
-  var modal = $(this);
-  modal.find('.modal-header').text(recipient + ' category static');
-})
-JS;
-$this->registerJS($script);
 
