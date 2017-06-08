@@ -159,6 +159,40 @@ Modal::end();
         });
     }
 
+    $(document).on('ready pjax:success', function() {
+    $('#all-statistic').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var modal = $(this);
+        var date = new Date();
+        var string_date = date.toISOString().substring(0, 10);
+
+        getAllStatistic(string_date, 1);
+
+
+    });
+    });
+
+
+    function getAllStatistic(date, by_category)
+    {
+        jQuery.ajax({
+            type: "GET",
+            url: '/outgo/all-statistic',
+            dataType: 'html',
+            data: {
+                'date': date,
+                'by_category': (by_category ? '1' : '0')
+            },
+            success: function (data) {
+                jQuery('#all-statistic').find('.modal-body').html(data);
+
+            },
+            error: function (exception) {
+                alert('error'+JSON.stringify(exception));
+            }
+        });
+    }
+
 
 </script>
 </body>

@@ -43,6 +43,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'site/registerInterest' => 'site/register-interest',
             ],
         ],
 

@@ -117,5 +117,25 @@ class Income extends ActiveRecord
         return ($query->count() > 1 ? false : true );
     }
 
+    /**
+     * Get sum by parameters for all statistic income
+     *
+     * @param array $params(user_id, date, category, id)
+     *
+     * @return float
+     */
+    public static function getSumAllStatistic($params)
+    {
+        $query = self::find()->select('SUM(sum) as sum');
+
+        //we always filter by user_id and month
+        $query->andFilterWhere([
+            'user_id' => Yii::$app->user->id,
+        ]);
+        $query->andFilterWhere(['>=', 'date', Utils::getStartMonth($params['date'])]);
+        $query->andFilterWhere(['<=', 'date', $params['date']]);
+
+        return $query->scalar();
+    }
 
 }

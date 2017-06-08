@@ -183,9 +183,9 @@ class Outgo extends ActiveRecord
     }
 
     /**
-     * Get sum by parameters without one ID
+     * Get sum by parameters for statistic
      *
-     * @param array $params(user_id, date, category, id)
+     * @param array $params(type, date_start, date_end, category)
      *
      * @return float
      */
@@ -201,7 +201,6 @@ class Outgo extends ActiveRecord
         $query->andFilterWhere(['<=', 'date', $params['date_end']]);
         if ($params['type'] == 'category') {
             $query->andFilterWhere(['category' => $params['category']]);
-            $query->groupBy('category2');
         }
         else if ($params['type'] == 'category2')
             $query->andFilterWhere(['category2' => $params['category']]);
@@ -211,4 +210,24 @@ class Outgo extends ActiveRecord
         return $query->scalar();
     }
 
+    /**
+     * Get sum by parameters for all statistic outgo
+     *
+     * @param array $params(user_id, date, category, id)
+     *
+     * @return float
+     */
+    public static function getSumAllStatistic($params)
+    {
+        $query = self::find()->select('SUM(sum) as sum');
+
+        //we always filter by user_id and month
+        $query->andFilterWhere([
+            'user_id' => Yii::$app->user->id,
+        ]);
+        $query->andFilterWhere(['>=', 'date', Utils::getStartMonth($params['date'])]);
+        $query->andFilterWhere(['<=', 'date', $params['date']]);
+
+        return $query->scalar();
+    }
 }

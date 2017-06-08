@@ -18,61 +18,70 @@
 use yii\helpers\Html;
 use yii\jui\DatePicker;
 use yii\grid\GridView;
+use yii\widgets\Pjax;
 
 ?>
 <?php
 //select month
 ?>
-<?= Html::label('Date start'); ?>
-<?php echo DatePicker::widget([
-    'name' => 'date-start',
-    'clientOptions' => [
-        'showOn' => 'button',
-        'buttonImage' => '/images/calendar.gif',
-        'changeMonth' => true,
-        'changeYear' => true,
-        'firstDay' => '1',
-    ],
-    'id' => 'date-start',
-    'value' => $date_start,
-    'dateFormat' => 'yyyy-MM-dd',
-]); ?>
-<?= Html::label('Date end'); ?>
-<?php echo DatePicker::widget([
-    'name' => 'date-end',
-    'clientOptions' => [
-        'showOn' => 'button',
-        'buttonImage' => '/images/calendar.gif',
-        'changeMonth' => true,
-        'changeYear' => true,
-        'firstDay' => '1',
-    ],
-    'id' => 'date-end',
-    'value' => $date_end,
-    'dateFormat' => 'yyyy-MM-dd',
-]); ?>
-<?= Html::button(
-    'Show',
-    [
-        'class' => 'btn btn-success',
-        'id' => 'show-category-statistic'
-    ]) ?>
-<?= Html::a('Cancel', Yii::$app->request->referrer, ['class'=>'btn btn-warning']) ?>
+<?php Pjax::begin(['enablePushState' => true,'id' => 'modal_pjax']);?>
 
+<?= Html::label('Date'); ?>
+<?php echo DatePicker::widget([
+    'name' => 'date',
+    'clientOptions' => [
+        'showOn' => 'button',
+        'buttonImage' => '/images/calendar.gif',
+        'changeMonth' => true,
+        'changeYear' => true,
+        'firstDay' => '1',
+    ],
+    'id' => 'date',
+    'value' => $date,
+    'dateFormat' => 'yyyy-MM-dd',
+]); ?>
+
+<?php echo Html::checkbox('by_category',$by_category, ['class' => 'checkbox', 'id' => 'by_category', 'label' => 'By category']); ?>
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'columns' => [
+
         ['class' => 'yii\grid\SerialColumn'],
-        'category',
+        [
+            'attribute' => 'category',
+            'contentOptions' => function($model)
+            {
+                return ['class' => ($model['sum'] > 0 ? 'green_back' : 'red_back')];
+            }
+        ],
         [   'attribute' => 'category2',
             'footer' => '<strong>In Total</strong>',
+            'contentOptions' => function($model)
+            {
+                return ['class' => ($model['sum'] > 0 ? 'green_back' : 'red_back')];
+            }
         ],
-        'name',
+        [
+            'attribute' => 'name',
+            'contentOptions' => function($model)
+            {
+                return ['class' => ($model['sum'] > 0 ? 'green_back' : 'red_back')];
+            }
+        ],
         [   'attribute' => 'sum',
             'footer' => '<strong>' . $sum . '</strong>',
+            'contentOptions' => function($model)
+            {
+                return ['class' => ($model['sum'] > 0 ? 'green_back' : 'red_back')];
+            }
         ],
-        'date',
-
+        [
+            'attribute' => 'date',
+            'contentOptions' => function($model)
+            {
+                return ['class' => ($model['sum'] > 0 ? 'green_back' : 'red_back')];
+            }
+        ],
         [
             'class' => 'yii\grid\ActionColumn',
             'buttons'=> [
@@ -94,21 +103,30 @@ use yii\grid\GridView;
 
             ],
             'template'=>'{update}   {delete}   {copy}',
+            'contentOptions' => function($model)
+            {
+                return ['class' => ($model['sum'] > 0 ? 'green_back' : 'red_back')];
+            }
         ],
+
     ],
     'showFooter'=>true,
 ]); ?>
+<?php Pjax::end()?>
 
 
 <?php
 $script = <<< JS
 
-$('#show-category-statistic').on('click', function (event) {
- var date_start = $('input[name=date-start]').val();
- var date_end = $('input[name=date-end]').val();
+$('#date').on('change', function (event) {
   
+  getAllStatistic($(this).val(), $('#by_category').prop('checked'));
 
-  getStatistic('$type', '$category', date_start, date_end);
+});
+
+$('#by_category').on('click', function (event) {
+   console.log($(this).prop('checked'));
+    getAllStatistic($('#date').val(), $(this).prop('checked'));
 
 });
 JS;

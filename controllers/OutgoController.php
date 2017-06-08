@@ -458,5 +458,27 @@ class OutgoController extends Controller
         }
     }
 
+    /**
+     * Show all statistic
+     * @param $category - category
+     * @param $date_start - date start period
+     * @param $date_end - date end period
+     * @return string
+     */
+    public function actionAllStatistic() {
+        if  (Yii::$app->request->isAjax) {
+            //$by_category, $date
+            $searchModel = new OutgoSearch();
+            $dataProvider = $searchModel->searchAllStatistic(Yii::$app->request->queryParams);
+            return $this->renderAjax('/modal/modal-all-statistic', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'date' => Yii::$app->request->queryParams['date'],
+                'by_category' => Yii::$app->request->queryParams['by_category'],
+                'sum' => Income::getSumAllStatistic(Yii::$app->request->queryParams) - Outgo::getSumAllStatistic(Yii::$app->request->queryParams),
+            ]);
+        }
+    }
+
 
 }

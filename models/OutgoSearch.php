@@ -49,9 +49,7 @@ class OutgoSearch extends Outgo
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => [
-                'pageSize' => false,
-            ],
+            'pagination' => false,
         ]);
 
         $this->load($params);
@@ -170,7 +168,7 @@ class OutgoSearch extends Outgo
     }
 
     /**
-     * Creates data provider instance with statistic query applied by category
+     * Creates data provider instance with statistic query applied by type: category, category2, name
      *
      * @param array $params
      *
@@ -233,4 +231,43 @@ class OutgoSearch extends Outgo
         return $dataProvider;
     }
 
+    /**
+     * Creates data provider instance with  all statistic query of income and outgo on date
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function searchAllStatistic($params)
+    {
+        if ($params['by_category']){
+            $select_outgo = 'id, MAX(date) AS date, -SUM(sum) AS sum, category, category2, name';
+            $group = 'GROUP BY category';
+        }
+        else {
+            $select_outgo = 'id, date, -(sum) as sum, category, category2, name';
+            $group = '';
+        }
+
+        $query = Outgo::findBySql("
+            SELECT id, date, sum, category, category2, name
+            FROM 
+             (SELECT $select_outgo 
+              FROM outgo 
+              WHERE user_id=" .  Yii::$app->user->id . " AND date>='" . Utils::getStartMonth($params['date']) ."' AND date<='" . $params['date'] ."' " . $group ."
+              UNION
+              SELECT id, date, sum, category, '' AS category2, '' AS name
+              FROM income 
+              WHERE user_id=" .  Yii::$app->user->id . " AND date>='" . Utils::getStartMonth($params['date']) ."' AND date<='" . $params['date'] ."'
+             ) AS income_outgo ORDER BY " . ($params['by_category'] ? 'category' : 'date DESC'));
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => [
+                'pageSize' => 5,
+            ],
+        ]);
+
+        return $dataProvider;
+    }
 }

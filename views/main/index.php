@@ -20,6 +20,7 @@ use \yii\bootstrap\Tabs;
 use yii\widgets\ActiveForm;
 use yii\jui\DatePicker;
 use \yii\bootstrap\Alert;
+use \yii\bootstrap\Modal;
 
 ?>
 <h1><span class>Current month: <?php echo date('M Y', strtotime($current_date)); ?></br>You have <span class="big_text <?= Html::encode($class_sum) ?>"><?= Html::encode($sum_replace) ?></span> money for <span class="big_text blue"><?= Html::encode($day_replace) ?></span> days</span></h1>
@@ -60,6 +61,15 @@ $form = ActiveForm::begin([
         ]
     ) ?>
 <?= Html::Input('button', 'export-month-plan', 'Export plan from current month to the next', ['id' => 'export-month-plan']); ?>
+<?= Html::a( 'All Statistic',
+    '',
+    [
+        'title' => Yii::t('yii', 'Show income outgo statistic'),
+        'class' => 'btn btn-info',
+        'data-pjax' => '0',
+        'data-toggle' => 'modal',
+        'data-target' => '#all-statistic',
+    ]); ?>
 
 
 <?php echo Tabs::widget([
@@ -111,6 +121,16 @@ $form = ActiveForm::begin([
 <p>
 
 </p>
+
+<?php
+
+Modal::begin([
+    'header' => '<h2>Statistic</h2>',
+    'id' => 'all-statistic',
+    'size' => "modal-lg",
+]);
+Modal::end();
+?>
 
 
 <?php
