@@ -46,9 +46,9 @@ class Utils
      */
     public static function getStartNextMonth( $date = 0 ) {
         if ( !$date ) {
-            return date( "Y-m-01", strtotime( date( 'Y' ) . '-' . date( 'm', strtotime( '+1 month' ) ) . '-01 00:00:00' ) );
+            return date( "Y-m-01", strtotime( "+1 month" ) );
         }
-        return date( "Y-m-01", strtotime( date( 'Y', strtotime( $date ) ) . '-' . date( 'm', strtotime( '+1 month', strtotime( $date ) ) ) . '-01 00:00:00' ) );
+        return date( "Y-m-01", strtotime( "+1 month", strtotime($date) ) );
     }
 
     /**
